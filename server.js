@@ -5,10 +5,10 @@ const MongoClient = require('mongodb').MongoClient
 
 var db, collection;
 
-const url = "mongodb+srv://demo:demo@cluster0-q2ojb.mongodb.net/test?retryWrites=true";
-const dbName = "demo";
+const url = "mongodb+srv://vikiana:a123b@cluster0.6ozuol9.mongodb.net/savageDemo?retryWrites=true&w=majority";
+const dbName = "savageDemo";
 
-app.listen(3000, () => {
+app.listen(2500, () => {
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
         if(error) {
             throw error;
@@ -38,7 +38,7 @@ app.post('/messages', (req, res) => {
   })
 })
 
-app.put('/messages', (req, res) => {
+app.put('/thumbUp', (req, res) => {
   db.collection('messages')
   .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
     $set: {
@@ -52,6 +52,23 @@ app.put('/messages', (req, res) => {
     res.send(result)
   })
 })
+
+app.put('/thumbDown', (req, res) => {
+  db.collection('messages')
+  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
+    $set: {
+      thumbDown: req.body.thumbDown + 1
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    console.log(result);
+    res.send(result)
+  })
+})
+
 
 app.delete('/messages', (req, res) => {
   db.collection('messages').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
